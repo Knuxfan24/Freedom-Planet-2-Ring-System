@@ -15,12 +15,12 @@ namespace Freedom_Planet_2_Ring_System.Patchers
                 if (!FPPlayerPatcher.player.powerups.Contains((FPPowerup)Plugin.ringItemID))
                     return;
 
+            // Get this Petal's animator, aborting if we somehow can't find it.
             Animator animator = __instance.GetComponent<Animator>();
-
             if (animator == null)
                 return;
 
-            // If we're not already using the Ring animator, then replace it and the sound with the Ring ones.
+            // If we're not already using the Ring animator, then replace it and the sounds with the Ring ones.
             if (animator.runtimeAnimatorController.name != "Ring Animator")
             {
                 animator.runtimeAnimatorController = Plugin.ringsAssetBundle.LoadAsset<RuntimeAnimatorController>("Ring Animator");

@@ -23,6 +23,7 @@ namespace Freedom_Planet_2_Ring_System
         public static ConfigEntry<bool> configNerfShields;
         public static ConfigEntry<bool> configStartWithRings;
         public static ConfigEntry<bool> configStartWithRingsCheckpoint;
+        public static ConfigEntry<bool> configSonicHUD;
 
         // Logger.
         public static ManualLogSource consoleLog;
@@ -67,6 +68,13 @@ namespace Freedom_Planet_2_Ring_System
                                                          "Makes respawning at Checkpoints also give 10 Rings. This does nothing if the previous option is disabled.\r\n" +
                                                          "false: Disabled\r\n" +
                                                          "true: Enabled");
+
+            configSonicHUD = Config.Bind("Misc",
+                                         "Enable Sonic HUD",
+                                         false,
+                                         "Replaces most elements of the HUD with a recreation of Sonic 1's when the Power Ring item is equipped.\r\n" +
+                                         "false: Disabled\r\n" +
+                                         "true: Enabled");
 
             // Create and register the Power Ring item.
             FP2Lib.Item.ItemHandler.RegisterItem("k24.rings.bravestone", "Power Ring", ringsAssetBundle.LoadAsset<Sprite>("braveStoneRing"), "Replaces Crystals and Petals with Rings. Drop all held Rings upon taking damage and lose a life if damaged while holding none.", IAddToShop.Yuni, 0, 1, 0.25f);
