@@ -81,8 +81,7 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
                 remainingTime = 180000 - actualTime;
 
             // If we've run out of time, then hide the numbers and display TOO LONG like the end tally in 3D Blast.
-            // TODO: This does end up displaying 0:00 for a bit, might want to check for less than 60?
-            if (remainingTime <= 0 && FPPlayerPatcher.player.IsPowerupActive(FPPowerup.TIME_LIMIT))
+            if (remainingTime < 100 && FPPlayerPatcher.player.IsPowerupActive(FPPowerup.TIME_LIMIT))
             {
                 timer[4].SetDigitValue(0);
                 timer[0].SetDigitValue(11);
