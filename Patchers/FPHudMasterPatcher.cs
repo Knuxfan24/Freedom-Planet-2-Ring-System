@@ -26,7 +26,8 @@ namespace Freedom_Planet_2_Ring_System.Patchers
                                        ref FPHudDigit[] ___hudEnergy,
                                        ref FPHudDigit[] ___hudLifePetals,
                                        ref FPHudDigit[] ___hudShields,
-                                       ref GameObject ___energyBarGraphic)
+                                       ref GameObject ___energyBarGraphic,
+                                       ref GameObject ___hudTimeLimitBar)
         {
             // Only do this if the config option is enabled and the player has the Power Ring item equipped.
             if (Plugin.configSonicHUD.Value && __instance.targetPlayer.powerups.Contains((FPPowerup)Plugin.ringItemID))
@@ -49,6 +50,19 @@ namespace Freedom_Planet_2_Ring_System.Patchers
 
                 // Move Carol's bike indicator down to beside the life icon.
                 __instance.hudBike[0].transform.position = new(80, -280, 0);
+
+                // Delete the Time Limit's display if it exists.
+                if (___hudTimeLimitBar != null)
+                {
+                    UnityEngine.Object.Destroy(___hudTimeLimitBar.gameObject);
+                    UnityEngine.Object.Destroy(__instance.hudTimeLimit[0].gameObject);
+                    UnityEngine.Object.Destroy(__instance.hudTimeLimit[1].gameObject);
+                    UnityEngine.Object.Destroy(__instance.hudTimeLimit[2].gameObject);
+                    UnityEngine.Object.Destroy(__instance.hudTimeLimit[3].gameObject);
+                    UnityEngine.Object.Destroy(__instance.hudTimeLimit[4].gameObject);
+                    UnityEngine.Object.Destroy(__instance.hudTimeLimit[5].gameObject);
+                    ___hudTimeLimitBar = null;
+                }
             }
         }
     }

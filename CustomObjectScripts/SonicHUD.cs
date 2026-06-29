@@ -9,12 +9,13 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
     {
         // Arrays holding the digits for the various parts of the HUD.
         private FPHudDigit[] energy = new FPHudDigit[3];
-        private FPHudDigit[] timer = new FPHudDigit[3];
+        private FPHudDigit[] timer = new FPHudDigit[5];
         private FPHudDigit[] rings = new FPHudDigit[4];
         private FPHudDigit[] lives = new FPHudDigit[3];
 
-        // Timer to control the Rings label blinking.
+        // Timer to control the Rings and Time label blinking.
         private float ringTimer = 0f;
+        private float timeLimitTimer = 0f;
 
         // Get the ID of Sonic from FP2Lib.
         private readonly FPCharacterID sonicID = (FPCharacterID)FP2Lib.Player.PlayerHandler.GetPlayableCharaByUid("k24.sonic").id;
@@ -27,8 +28,10 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
             energy[2] = this.transform.GetChild(0).GetChild(2).GetComponent<FPHudDigit>();
 
             timer[0] = this.transform.GetChild(1).GetChild(0).GetComponent<FPHudDigit>();
-            timer[1] = this.transform.GetChild(1).GetChild(2).GetComponent<FPHudDigit>();
+            timer[1] = this.transform.GetChild(1).GetChild(1).GetComponent<FPHudDigit>();
             timer[2] = this.transform.GetChild(1).GetChild(3).GetComponent<FPHudDigit>();
+            timer[3] = this.transform.GetChild(1).GetChild(4).GetComponent<FPHudDigit>();
+            timer[4] = this.transform.GetChild(1).GetComponent<FPHudDigit>();
 
             rings[0] = this.transform.GetChild(2).GetChild(0).GetComponent<FPHudDigit>();
             rings[1] = this.transform.GetChild(2).GetChild(1).GetComponent<FPHudDigit>();
@@ -71,19 +74,83 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
 
         private void DisplayTime()
         {
-            // Don't bother updating the timer if we've reached 10 minutes.
-            if (FPStage.currentStage.minutes >= 10)
+            // Calculate the time limit in the same way the vanilla HUD does.
+            int actualTime = FPStage.currentStage.minutes * 6000 + FPStage.currentStage.seconds * 100 + FPStage.currentStage.milliSeconds;
+            int remainingTime = FPSaveManager.GetStageParTime(FPStage.currentStage.stageID) - actualTime;
+            if (FPStage.currentStage.stageID == 31 && (FPSaveManager.currentArenaChallenge == 19 || FPSaveManager.currentArenaChallenge == 20))
+                remainingTime = 180000 - actualTime;
+
+            // If we've run out of time, then hide the numbers and display TOO LONG like the end tally in 3D Blast.
+            // TODO: This does end up displaying 0:00 for a bit, might want to check for less than 60?
+            if (remainingTime <= 0 && FPPlayerPatcher.player.IsPowerupActive(FPPowerup.TIME_LIMIT))
+            {
+                timer[4].SetDigitValue(0);
+                timer[0].SetDigitValue(11);
+                this.transform.GetChild(1).GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+                this.transform.GetChild(1).GetChild(2).GetComponent<SpriteRenderer>().enabled = false;
+                this.transform.GetChild(1).GetChild(3).GetComponent<SpriteRenderer>().enabled = false;
+                this.transform.GetChild(1).GetChild(4).GetComponent<SpriteRenderer>().enabled = false;
+                return;
+            }
+
+            // Don't bother updating the timer if we've reached 100 minutes (somehow).
+            if (FPStage.currentStage.minutes >= 100)
                 return;
 
-            // Set the minute counter.
-            timer[0].SetDigitValue(FPStage.currentStage.minutes + 1);
+            // Split the seconds count into two individual ints.
+            List<int> minutesDigits = [.. ((int)FPStage.currentStage.minutes).ToString().PadLeft(2, '0').Select(digit => int.Parse(digit.ToString()))];
+
+            // Replace the values if the Time Limit Brave Stone is equipped.
+            if (FPPlayerPatcher.player.IsPowerupActive(FPPowerup.TIME_LIMIT))
+            {
+                minutesDigits[0] = remainingTime / 60000;
+                minutesDigits[1] = remainingTime / 6000 % 10;
+            }
+
+            // Loop through the two digits in the second count and set its corrosponding digit's sprite to the value plus 1 (as 0 is a blank sprite).
+            for (int digitIndex = 0; digitIndex < minutesDigits.Count; digitIndex++)
+                timer[digitIndex].SetDigitValue(minutesDigits[digitIndex] + 1);
+
+            // Hide the first digit if we haven't yet hit ten minutes.
+            if (minutesDigits[0] == 0)
+                timer[0].SetDigitValue(0);
 
             // Split the seconds count into two individual ints.
             List<int> secondsDigits = [.. ((int)FPStage.currentStage.seconds).ToString().PadLeft(2, '0').Select(digit => int.Parse(digit.ToString()))];
 
+            // Replace the values if the Time Limit Brave Stone is equipped.
+            if (FPPlayerPatcher.player.IsPowerupActive(FPPowerup.TIME_LIMIT))
+            {
+                secondsDigits[0] = remainingTime / 1000 % 6;
+                secondsDigits[1] = remainingTime / 100 % 10;
+            }
+
             // Loop through the two digits in the second count and set its corrosponding digit's sprite to the value plus 1 (as 0 is a blank sprite).
             for (int digitIndex = 0; digitIndex < secondsDigits.Count; digitIndex++)
-                timer[digitIndex + 1].SetDigitValue(secondsDigits[digitIndex] + 1);
+                timer[digitIndex + 2].SetDigitValue(secondsDigits[digitIndex] + 1);
+
+            // Check if we have no Rings.
+            if (minutesDigits[0] == 0 && minutesDigits[1] == 0 && FPPlayerPatcher.player.IsPowerupActive(FPPowerup.TIME_LIMIT))
+            {
+                // Increment the Ring Timer.
+                timeLimitTimer += 1 * FPStage.deltaTime;
+
+                // If the Ring Timer is less than 8, then swap to the red label, else swap to the normal one.
+                if (timeLimitTimer < 8) timer[4].SetDigitValue(1);
+                else timer[4].SetDigitValue(0);
+
+                // Loop the timer back down if its reached 16.
+                if (timeLimitTimer >= 16)
+                    timeLimitTimer -= 16;
+
+            }
+
+            // If we have Rings, then reset the timer and label.
+            else
+            {
+                timeLimitTimer = 0;
+                timer[4].SetDigitValue(0);
+            }
         }
 
         private void DisplayRings()
