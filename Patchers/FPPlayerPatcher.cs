@@ -63,6 +63,16 @@ namespace Freedom_Planet_2_Ring_System.Patchers
             if (__instance.totalCrystals <= 0) __instance.health = 0;
             else __instance.health = __instance.healthMax;
 
+            // Stupid hack to kill the BFF2000 if we're out of Rings in it.
+            FPBaseObject objRef = null;
+            while (FPStage.ForEach(PlayerBFF2000.classID, ref objRef))
+            {
+                PlayerBFF2000 playerBFF = (PlayerBFF2000)objRef;
+
+                if (playerBFF != null)
+                    __instance.health = -1;
+            }
+
             // If we're using the nerf shields option, then force its health down to 1.
             // TODO: This makes the Strong Shields Potion do nothing.
             if (__instance.shieldHealth > 1 && Plugin.configNerfShields.Value == true)

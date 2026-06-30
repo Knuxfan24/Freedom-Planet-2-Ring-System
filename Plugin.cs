@@ -1,5 +1,4 @@
-﻿// TODO: Rings can't be lost in the BFF2000.
-// TODO: The HUD looks a bit goofy in the Lunar Cannon boss.
+﻿// TODO: The HUD looks a bit goofy in the Lunar Cannon boss.
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -87,6 +86,7 @@ namespace Freedom_Planet_2_Ring_System
             Harmony.CreateAndPatchAll(typeof(FPPlayerPatcher));
             Harmony.CreateAndPatchAll(typeof(ItemBoxPatcher));
             Harmony.CreateAndPatchAll(typeof(ItemCrystalPatcher));
+            Harmony.CreateAndPatchAll(typeof(PlayerBFF2000Patcher));
         }
     }
 }

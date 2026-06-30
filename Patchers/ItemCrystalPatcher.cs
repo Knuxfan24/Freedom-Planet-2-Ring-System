@@ -157,5 +157,15 @@ namespace Freedom_Planet_2_Ring_System.Patchers
                 }
             }
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ItemCrystal), "SetMagnetic")]
+        static bool StopBFF2000Magnet(ItemCrystal __instance)
+        {
+            if (__instance.state == State_Dropped)
+                return false;
+
+            return true;
+        }
     }
 }

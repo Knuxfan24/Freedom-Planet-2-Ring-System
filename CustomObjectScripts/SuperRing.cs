@@ -1,4 +1,4 @@
-﻿// TODO: Make the BFF2000 magnetise these when I get around to making that work properly.
+﻿// TODO: Make the BFF2000 magnetise these.
 using UnityEngine;
 
 namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
