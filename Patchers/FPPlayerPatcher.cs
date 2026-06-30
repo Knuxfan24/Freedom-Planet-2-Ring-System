@@ -18,8 +18,12 @@ namespace Freedom_Planet_2_Ring_System.Patchers
             player = __instance;
 
             // Only do the other stuff if we have the Power Ring item equipped.
-            if (!player.powerups.Contains((FPPowerup)Plugin.ringItemID))
+            if (!player.powerups.Contains((FPPowerup)Plugin.ringItemID) || UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Bakunawa_Chase")
                 return;
+
+            // Sneak the No Petals Brave Stone into our item set, as manually trying to change the life petals into crystals caused so many problems.
+            if (!player.powerups.Contains(FPPowerup.NO_PETALS))
+                player.powerups = [.. player.powerups.AddItem(FPPowerup.NO_PETALS)];
 
             // Set the count of crystals for an extra life to 100 or 200 depending on if the Expensive Stocks Brave Stone is equipped.
             if (__instance.powerups.Contains(FPPowerup.EXPENSIVE_STOCKS))
@@ -52,7 +56,7 @@ namespace Freedom_Planet_2_Ring_System.Patchers
         static void ReplaceHealth(FPPlayer __instance)
         {
             // Only do this if we have the Power Ring item equipped.
-            if (!player.powerups.Contains((FPPowerup)Plugin.ringItemID))
+            if (!player.powerups.Contains((FPPowerup)Plugin.ringItemID) ||  UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Bakunawa_Chase")
                 return;
 
             // Remove our health if we have no Rings or give us maximum health if we do.
@@ -70,7 +74,7 @@ namespace Freedom_Planet_2_Ring_System.Patchers
         static void HighKnockback(FPPlayer __instance)
         {
             // Only do this if we have the Power Ring item equipped.
-            if (!player.powerups.Contains((FPPowerup)Plugin.ringItemID))
+            if (!player.powerups.Contains((FPPowerup)Plugin.ringItemID) || UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Bakunawa_Chase")
                 return;
 
             // Give us some decently high knockback.
@@ -84,7 +88,7 @@ namespace Freedom_Planet_2_Ring_System.Patchers
         static void DropRings(FPPlayer __instance)
         {
             // Only do this if we have the Power Ring item equipped.
-            if (!player.powerups.Contains((FPPowerup)Plugin.ringItemID))
+            if (!player.powerups.Contains((FPPowerup)Plugin.ringItemID) || UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Bakunawa_Chase")
                 return;
 
             // Check that our timer is 0, which it will be the first time the Hurt state is activated.
@@ -110,7 +114,7 @@ namespace Freedom_Planet_2_Ring_System.Patchers
 
                 // Loop through and drop up to 32 Rings.
                 float ringAngle;
-                for (ringAngle = 0f; ringAngle <= 720; ringAngle += 720 / ringCount)
+                for (ringAngle = 0f; ringAngle < 720; ringAngle += 720 / ringCount)
                 {
                     // Create a crystal and set it to our custom dummy Dropped state.
                     ItemCrystal itemCrystal = (ItemCrystal)FPStage.CreateStageObject(ItemCrystal.classID, __instance.position.x + Mathf.Cos((__instance.transform.eulerAngles.z + ringAngle) * ((float)Math.PI / 180f)) * 6f, __instance.position.y + Mathf.Sin((__instance.transform.eulerAngles.z + ringAngle) * ((float)Math.PI / 180f)) * 6f);

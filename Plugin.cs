@@ -1,9 +1,5 @@
-﻿// TODO: Some Rings, usually ones converted from petals, can just decide to give over a hundred sometimes?
-// TODO: Option to allow PlayerBoss entities to pick up Rings for themselves like in '06 or the Shadow fight in Gens?
-// TODO: Seemingly drop one more Ring than intended?
-// TODO: Rings can't be lost in the BFF2000 or Bakunawa Chase.
+﻿// TODO: Rings can't be lost in the BFF2000.
 // TODO: The HUD looks a bit goofy in the Lunar Cannon boss.
-// TODO: Carol's bike icon is still parented to the normal HUD and so moves with it.
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -91,7 +87,6 @@ namespace Freedom_Planet_2_Ring_System
             Harmony.CreateAndPatchAll(typeof(FPPlayerPatcher));
             Harmony.CreateAndPatchAll(typeof(ItemBoxPatcher));
             Harmony.CreateAndPatchAll(typeof(ItemCrystalPatcher));
-            Harmony.CreateAndPatchAll(typeof(ItemPetalPatcher));
         }
     }
 }

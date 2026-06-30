@@ -15,7 +15,7 @@ namespace Freedom_Planet_2_Ring_System.Patchers
         static void RingVisuals(ref Animator ___animator, ItemCrystal __instance)
         {
             // Only do this if we have the Power Ring item equipped.
-            if (FPPlayerPatcher.player != null)
+            if (FPPlayerPatcher.player != null && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Bakunawa_Chase")
                 if (!FPPlayerPatcher.player.powerups.Contains((FPPowerup)Plugin.ringItemID))
                     return;
 

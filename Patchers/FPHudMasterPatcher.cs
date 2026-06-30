@@ -12,7 +12,7 @@ namespace Freedom_Planet_2_Ring_System.Patchers
         private static void ReplaceHUDIcon(FPHudMaster __instance, ref GameObject ___hudCrystalIcon)
         {
             // If the Power Ring item is equipped then replace the crystal icon on the HUD with a Ring.
-            if (__instance.targetPlayer.powerups.Contains((FPPowerup)Plugin.ringItemID))
+            if (__instance.targetPlayer.powerups.Contains((FPPowerup)Plugin.ringItemID) && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Bakunawa_Chase")
                 ___hudCrystalIcon.GetComponent<SpriteRenderer>().sprite = Plugin.ringsAssetBundle.LoadAsset<Sprite>("hudRing");
         }
 
@@ -30,7 +30,7 @@ namespace Freedom_Planet_2_Ring_System.Patchers
                                        ref GameObject ___hudTimeLimitBar)
         {
             // Only do this if the config option is enabled and the player has the Power Ring item equipped.
-            if (Plugin.configSonicHUD.Value && __instance.targetPlayer.powerups.Contains((FPPowerup)Plugin.ringItemID))
+            if (Plugin.configSonicHUD.Value && __instance.targetPlayer.powerups.Contains((FPPowerup)Plugin.ringItemID) && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Bakunawa_Chase")
             {
                 // Instantiate the HUD and add the script to it.
                 GameObject sonicHUD = GameObject.Instantiate(Plugin.ringsAssetBundle.LoadAsset<GameObject>("Sonic HUD"));
@@ -49,7 +49,8 @@ namespace Freedom_Planet_2_Ring_System.Patchers
                 foreach (var _ in ___hudShields) _.gameObject.GetComponent<SpriteRenderer>().enabled = false;
 
                 // Move Carol's bike indicator down to beside the life icon.
-                __instance.hudBike[0].transform.position = new(80, -280, 0);
+                __instance.hudBike[0].transform.position = new(80, -344, 0);
+                __instance.hudBike[0].transform.parent = null;
 
                 // Delete the Time Limit's display if it exists.
                 if (___hudTimeLimitBar != null)
