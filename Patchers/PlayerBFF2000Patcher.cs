@@ -1,4 +1,5 @@
-﻿using Freedom_Planet_2_Ring_System.CustomObjectScripts;
+﻿// TODO: The Titan Armour managed to destroy the BFF2000 despite having Rings once?
+using Freedom_Planet_2_Ring_System.CustomObjectScripts;
 using HarmonyLib;
 using System;
 using System.Linq;

@@ -17,8 +17,13 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
         private float ringTimer = 0f;
         private float timeLimitTimer = 0f;
 
+        private bool shouldBeHidden = false;
+
         // Get the ID of Sonic from FP2Lib.
         private readonly FPCharacterID sonicID = (FPCharacterID)FP2Lib.Player.PlayerHandler.GetPlayableCharaByUid("k24.sonic").id;
+
+        // A reference to the stage HUD.
+        private FPHudMaster HUD;
 
         private void Start()
         {
@@ -41,6 +46,9 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
             lives[0] = this.transform.GetChild(3).GetChild(0).GetComponent<FPHudDigit>();
             lives[1] = this.transform.GetChild(3).GetChild(1).GetComponent<FPHudDigit>();
             lives[2] = this.transform.GetChild(3).GetComponent<FPHudDigit>();
+
+            // Get the original HUD so we can peek at its state.
+            HUD = UnityEngine.Object.FindObjectOfType<FPHudMaster>();
         }
 
         private void Update()
@@ -53,6 +61,45 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
             DisplayTime();
             DisplayRings();
             DisplayLives();
+            MoveHUD();
+        }
+
+        private void MoveHUD()
+        {
+            // Choose what to do based on the original HUD's state.
+            switch (HUD.state)
+            {
+                case 0:
+                    if (shouldBeHidden) Hide();
+                    else Show();
+                    break;
+
+                case 1:
+                    shouldBeHidden = false;
+                    Show();
+                    break;
+
+                case 2:
+                    shouldBeHidden = true;
+                    Hide();
+                    break;
+            }
+
+            void Show()
+            {
+                if (transform.position.x < 0)
+                    transform.position = new(transform.position.x + (8 * FPStage.deltaTime), transform.position.y, transform.position.z);
+                else
+                    transform.position = new(0, transform.position.y, transform.position.z);
+            }
+
+            void Hide()
+            {
+                if (transform.position.x > -128)
+                    transform.position = new(transform.position.x - (8 * FPStage.deltaTime), transform.position.y, transform.position.z);
+                else
+                    transform.position = new(-128, transform.position.y, transform.position.z);
+            }
         }
 
         private void DisplayEnergy()
@@ -110,7 +157,7 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
             for (int digitIndex = 0; digitIndex < minutesDigits.Count; digitIndex++)
                 timer[digitIndex].SetDigitValue(minutesDigits[digitIndex] + 1);
 
-            // Hide the first digit if we haven't yet hit ten minutes.
+            // Hide the first digit if we haven't yet to hit ten minutes.
             if (minutesDigits[0] == 0)
                 timer[0].SetDigitValue(0);
 
@@ -128,23 +175,20 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
             for (int digitIndex = 0; digitIndex < secondsDigits.Count; digitIndex++)
                 timer[digitIndex + 2].SetDigitValue(secondsDigits[digitIndex] + 1);
 
-            // Check if we have no Rings.
+            // Check if we're in the last minute of our time limit.
             if (minutesDigits[0] == 0 && minutesDigits[1] == 0 && FPPlayerPatcher.player.IsPowerupActive(FPPowerup.TIME_LIMIT))
             {
-                // Increment the Ring Timer.
+                // Increment the Time Limit Timer.
                 timeLimitTimer += 1 * FPStage.deltaTime;
 
-                // If the Ring Timer is less than 8, then swap to the red label, else swap to the normal one.
+                // If the Time Limit Timer is less than 8, then swap to the red label, else swap to the normal one.
                 if (timeLimitTimer < 8) timer[4].SetDigitValue(1);
                 else timer[4].SetDigitValue(0);
 
                 // Loop the timer back down if its reached 16.
                 if (timeLimitTimer >= 16)
                     timeLimitTimer -= 16;
-
             }
-
-            // If we have Rings, then reset the timer and label.
             else
             {
                 timeLimitTimer = 0;
@@ -159,7 +203,13 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
 
             // Loop through the digits in the ring count and set its corrosponding digit's sprite to the value plus 1 (as 0 is a blank sprite).
             for (int digitIndex = 0; digitIndex < ringDigits.Count; digitIndex++)
+            {
+                // If we've somehow got over 999 Rings, then force the digits to 9 so the Ring counter still reads 999.
+                if (FPPlayerPatcher.player.totalCrystals >= 1000)
+                    ringDigits[digitIndex] = 9;
+
                 rings[digitIndex].SetDigitValue(ringDigits[digitIndex] + 1);
+            }
 
             // Hide the first and second digits if we don't have enough rings for them to be larger than 0.
             if (FPPlayerPatcher.player.totalCrystals < 100) rings[0].SetDigitValue(0);
@@ -178,7 +228,6 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
                 // Loop the timer back down if its reached 16.
                 if (ringTimer >= 16)
                     ringTimer -= 16;
-
             }
 
             // If we have Rings, then reset the timer and label.

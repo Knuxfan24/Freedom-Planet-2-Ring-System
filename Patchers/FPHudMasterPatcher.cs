@@ -50,7 +50,7 @@ namespace Freedom_Planet_2_Ring_System.Patchers
 
                 // Move Carol's bike indicator down to beside the life icon.
                 __instance.hudBike[0].transform.position = new(80, -344, 0);
-                __instance.hudBike[0].transform.parent = null;
+                __instance.hudBike[0].transform.parent = sonicHUD.transform;
 
                 // Delete the Time Limit's display if it exists.
                 if (___hudTimeLimitBar != null)

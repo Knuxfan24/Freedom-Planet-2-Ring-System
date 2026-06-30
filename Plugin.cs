@@ -1,5 +1,4 @@
-﻿// TODO: The HUD looks a bit goofy in the Lunar Cannon boss.
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using FP2Lib.Item;
