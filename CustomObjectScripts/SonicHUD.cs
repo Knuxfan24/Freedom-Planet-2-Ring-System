@@ -20,7 +20,7 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
         private bool shouldBeHidden = false;
 
         // Get the ID of Sonic from FP2Lib.
-        private readonly FPCharacterID sonicID = (FPCharacterID)FP2Lib.Player.PlayerHandler.GetPlayableCharaByUid("k24.sonic").id;
+        private FPCharacterID? sonicID;
 
         // A reference to the stage HUD.
         private FPHudMaster HUD;
@@ -49,6 +49,10 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
 
             // Get the original HUD so we can peek at its state.
             HUD = UnityEngine.Object.FindObjectOfType<FPHudMaster>();
+
+            // Get Sonic's ID if he exists.
+            if (sonicID == null && FP2Lib.Player.PlayerHandler.PlayableChars.ContainsKey("k24.sonic"))
+                sonicID = (FPCharacterID)FP2Lib.Player.PlayerHandler.GetPlayableCharaByUid("k24.sonic").id;
         }
 
         private void Update()
