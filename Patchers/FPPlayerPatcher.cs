@@ -156,5 +156,99 @@ namespace Freedom_Planet_2_Ring_System.Patchers
                 __instance.totalCrystals = 0;
             }
         }
+        
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(FPPlayer), "LateUpdate")]
+        static void Drown(FPPlayer __instance)
+        {
+            // Only do this if we have the Power Ring item equipped.
+            if (!player.powerups.Contains((FPPowerup)Plugin.ringItemID))
+                return;
+
+            // Only do this if we have any Rings.
+            if (__instance.totalCrystals > 0)
+            {
+                // Drain Rings if we're not using cruel drowning.
+                if (!Plugin.configCruelDrowning.Value)
+                {
+                    // Replicate the original game's oxygen drain.
+                    if (!(__instance.oxygenLevel <= 0f) || !__instance.IsKOd())
+                    {
+                        if (__instance.characterID == FPCharacterID.LILAC)
+                            __instance.oxygenLevel -= 0.00041666668f * FPStage.deltaTime;
+                        else
+                            __instance.oxygenLevel -= 0.00055555557f * FPStage.deltaTime;
+
+                        if (__instance.oxygenLevel <= 0f && __instance.IsKOd())
+                            __instance.oxygenLevel = 0f;
+                    }
+
+                    // Check if we've reached the threshold where damage would normally be dealt. If so, sap two Rings away.
+                    if (__instance.oxygenLevel <= -1f / 120f)
+                    {
+                        __instance.totalCrystals = Mathf.Max(0, __instance.totalCrystals - 2);
+                        FPAudio.PlaySfx(Plugin.ringsAssetBundle.LoadAsset<AudioClip>("ringloss"));
+                    }
+
+                    // Undo the drain we just did so the original function's maths still checks out.
+                    if (!(__instance.oxygenLevel <= 0f) || !__instance.IsKOd())
+                    {
+                        if (__instance.characterID == FPCharacterID.LILAC)
+                            __instance.oxygenLevel += 0.00041666668f * FPStage.deltaTime;
+                        else
+                            __instance.oxygenLevel += 0.00055555557f * FPStage.deltaTime;
+
+                        if (__instance.oxygenLevel <= 0f && __instance.IsKOd())
+                            __instance.oxygenLevel = 0f;
+                    }
+                }
+
+                // If we are using cruel drowning then remove the player's health and damage them on the same tic so the damage kills despite having Rings.
+                else if (__instance.oxygenLevel <= 0f)
+                {
+                    __instance.health = 0;
+                    __instance.Action_Hurt();
+                }
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(FPPlayer), "LateUpdate")]
+        static void Varia(FPPlayer __instance)
+        {
+            // Only do this if we have the Power Ring item equipped.
+            if (!player.powerups.Contains((FPPowerup)Plugin.ringItemID))
+                return;
+
+            // Only do this if we have any Rings.
+            if (__instance.totalCrystals > 0)
+            {
+                if ((FPStage.currentStage.weather == FPWeather.HOT || __instance.heatSurface) && (__instance.shieldID != 3 || __instance.shieldHealth <= 0))
+                {
+                    // Replicate the original game's heat addition.
+                    if (!(__instance.heatLevel >= 1f) || !__instance.IsKOd())
+                    {
+                        __instance.heatLevel += 0.00055555557f * FPStage.deltaTime;
+                        if (__instance.heatLevel > 1f && __instance.IsKOd())
+                            __instance.heatLevel = 1f;
+                    }
+
+                    // Check if we've reached the threshold where damage would normally be dealt. If so, sap two Rings away.
+                    if (__instance.heatLevel >= 1.0083333f)
+                    {
+                        __instance.totalCrystals = Mathf.Max(0, __instance.totalCrystals - 2);
+                        FPAudio.PlaySfx(Plugin.ringsAssetBundle.LoadAsset<AudioClip>("ringloss"));
+                    }
+
+                    // Undo the addition we just did so the original function's maths still checks out.
+                    if (!(__instance.heatLevel >= 1f) || !__instance.IsKOd())
+                    {
+                        __instance.heatLevel -= 0.00055555557f * FPStage.deltaTime;
+                        if (__instance.heatLevel > 1f && __instance.IsKOd())
+                            __instance.heatLevel = 1f;
+                    }
+                }
+            }
+        }
     }
 }

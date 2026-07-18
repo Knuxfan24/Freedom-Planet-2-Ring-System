@@ -9,7 +9,6 @@ using UnityEngine;
 
 namespace Freedom_Planet_2_Ring_System
 {
-    // TODO: Fix drowning and heat damage doing nothing.
     [BepInPlugin("K24_FP2_Rings", "Ring System", "1.0.1")]
     [BepInDependency("000.kuborro.libraries.fp2.fp2lib")]
     public class Plugin : BaseUnityPlugin
@@ -21,6 +20,7 @@ namespace Freedom_Planet_2_Ring_System
         public static int ringItemID;
 
         // Config options.
+        public static ConfigEntry<bool> configCruelDrowning;
         public static ConfigEntry<bool> configNerfShields;
         public static ConfigEntry<bool> configStartWithRings;
         public static ConfigEntry<bool> configStartWithRingsCheckpoint;
@@ -49,6 +49,13 @@ namespace Freedom_Planet_2_Ring_System
                 consoleLog.LogDebug(assetName);
 
             // Get the config options.
+            configCruelDrowning = Config.Bind("Misc",
+                                              "Cruel Drowning",
+                                              false,
+                                              "Bypass Rings when drowning and immediately kill the player when running out of oxygen.\r\n" +
+                                              "false: Disabled\r\n" +
+                                              "true: Enabled");
+
             configNerfShields = Config.Bind("Misc",
                                             "Nerf Shields",
                                             false,
