@@ -19,8 +19,9 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
 
         private bool shouldBeHidden = false;
 
-        // Get the ID of Sonic from FP2Lib.
+        // Get the ID of my character mods from FP2Lib.
         private FPCharacterID? sonicID;
+        private FPCharacterID? tailsID;
 
         // A reference to the stage HUD.
         private FPHudMaster HUD;
@@ -51,8 +52,8 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
             HUD = UnityEngine.Object.FindObjectOfType<FPHudMaster>();
 
             // Get Sonic's ID if he exists.
-            if (sonicID == null && FP2Lib.Player.PlayerHandler.PlayableChars.ContainsKey("k24.sonic"))
-                sonicID = (FPCharacterID)FP2Lib.Player.PlayerHandler.GetPlayableCharaByUid("k24.sonic").id;
+            if (sonicID == null && FP2Lib.Player.PlayerHandler.PlayableChars.ContainsKey("k24.sonic")) sonicID = (FPCharacterID)FP2Lib.Player.PlayerHandler.GetPlayableCharaByUid("k24.sonic").id;
+            if (tailsID == null && FP2Lib.Player.PlayerHandler.PlayableChars.ContainsKey("k24.tails")) tailsID = (FPCharacterID)FP2Lib.Player.PlayerHandler.GetPlayableCharaByUid("k24.tails").id;
         }
 
         private void Update()
@@ -256,6 +257,7 @@ namespace Freedom_Planet_2_Ring_System.CustomObjectScripts
 
             // Swap the life icon depending on the character.
             if (FPSaveManager.character == sonicID) lives[2].SetDigitValue(5);
+            if (FPSaveManager.character == tailsID) lives[2].SetDigitValue(6);
             else switch (FPSaveManager.character)
             {
                 case FPCharacterID.LILAC: lives[2].SetDigitValue(0); break;
