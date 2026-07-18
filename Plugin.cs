@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Freedom_Planet_2_Ring_System
 {
     // TODO: Fix drowning and heat damage doing nothing.
-    [BepInPlugin("K24_FP2_Rings", "Ring System", "1.0.0")]
+    [BepInPlugin("K24_FP2_Rings", "Ring System", "1.0.1")]
     [BepInDependency("000.kuborro.libraries.fp2.fp2lib")]
     public class Plugin : BaseUnityPlugin
     {

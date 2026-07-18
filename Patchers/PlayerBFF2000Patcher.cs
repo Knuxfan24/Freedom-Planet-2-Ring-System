@@ -1,5 +1,4 @@
-﻿// TODO: The Titan Armour managed to destroy the BFF2000 despite having Rings once?
-using Freedom_Planet_2_Ring_System.CustomObjectScripts;
+﻿// TODO: This is janky as fuck and some times just doesn't work.
 using HarmonyLib;
 using System;
 using System.Linq;
@@ -11,7 +10,7 @@ namespace Freedom_Planet_2_Ring_System.Patchers
     {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(PlayerBFF2000), "HealthUpdate")]
-        static void DropRings(PlayerBFF2000 __instance, ref float ___healthBuffer, ref float ___flinchInvulnTime)
+        static void DropRings(PlayerBFF2000 __instance, ref float ___flinchInvulnTime)
         {
             // Only do this if we have the Power Ring item equipped.
             if (FPPlayerPatcher.player != null)

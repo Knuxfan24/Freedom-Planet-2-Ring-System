@@ -14,10 +14,13 @@ namespace Freedom_Planet_2_Ring_System.Patchers
         [HarmonyPatch(typeof(ItemCrystal), "CollisionCheck")]
         static void RingVisuals(ref Animator ___animator, ItemCrystal __instance)
         {
+            // Only do this if we've found a player and we're not in Bakunawa Chase.
+            if (FPPlayerPatcher.player == null || UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "Bakunawa_Chase")
+                return;
+
             // Only do this if we have the Power Ring item equipped.
-            if (FPPlayerPatcher.player != null && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Bakunawa_Chase")
-                if (!FPPlayerPatcher.player.powerups.Contains((FPPowerup)Plugin.ringItemID))
-                    return;
+            if (!FPPlayerPatcher.player.powerups.Contains((FPPowerup)Plugin.ringItemID))
+                return;
 
             // If we're not already using the Ring animator, then replace it and the sound with the Ring ones.
             if (___animator.runtimeAnimatorController.name != "Ring Animator")
